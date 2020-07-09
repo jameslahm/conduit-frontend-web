@@ -1,14 +1,39 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+import * as serviceWorker from "./serviceWorker";
+import { useSelector, Provider as ReduxStoreProvider } from "react-redux";
+import { createStore } from "redux";
+import { rootStateType, rootReducer } from "./store";
+import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+import App from "./App";
+import { SnackbarProvider } from "notistack";
+import { ReactQueryDevtools } from "react-query-devtools";
+
+const store = createStore(rootReducer);
+
+const AppWrapper: React.FC = (props) => {
+  const themeOptions = useSelector((state: rootStateType) => state.theme);
+
+  const theme = createMuiTheme(themeOptions);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider maxSnack={3} autoHideDuration={2000}>
+        <App></App>
+      </SnackbarProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </ThemeProvider>
+  );
+};
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ReduxStoreProvider store={store}>
+      <AppWrapper />
+    </ReduxStoreProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change
