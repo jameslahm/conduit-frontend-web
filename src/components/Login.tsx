@@ -7,7 +7,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import LockIcon from "@material-ui/icons/Lock";
-import { Link as NavLink, navigate } from "@reach/router";
+import { Link as NavLink, useNavigate } from "@reach/router";
 import validator from "validator";
 import { useDispatch } from "react-redux";
 import { api } from "../utils";
@@ -57,6 +57,7 @@ const Login: React.FC<LoginPropsType> = () => {
   const dispatch = useDispatch();
   const [mutate] = useMutation(api.login);
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   async function handleSubmit(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>

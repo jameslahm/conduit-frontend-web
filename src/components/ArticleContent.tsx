@@ -15,8 +15,8 @@ import { rootStateType } from "../store";
 import { useSnackbar } from "notistack";
 import { useMutation, queryCache } from "react-query";
 import ReactMarkdown from "react-markdown";
-import DeleteIcon from '@material-ui/icons/Delete'
-import { navigate } from "@reach/router";
+import DeleteIcon from "@material-ui/icons/Delete";
+import { useNavigate } from "@reach/router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,8 +25,7 @@ const useStyles = makeStyles((theme) => ({
   favoritesCount: {
     marginRight: `${theme.spacing(1)}px`,
   },
-  delete:{
-  }
+  delete: {},
 }));
 
 interface ArticleContentPropsType {
@@ -47,7 +46,7 @@ const ArticleContent: React.FC<ArticleContentPropsType> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   const [mutateFavorite] = useMutation(api.favoriteArticle, {
-    onMutate: (data) => {
+    onMutate: () => {
       const newArticle = { ...article };
       newArticle.favorited = true;
       newArticle.favoritesCount++;
@@ -62,7 +61,7 @@ const ArticleContent: React.FC<ArticleContentPropsType> = ({
   });
 
   const [mutateUnFavorite] = useMutation(api.unfavoriteArticle, {
-    onMutate: (data) => {
+    onMutate: () => {
       const newArticle = { ...article };
       newArticle.favorited = false;
       newArticle.favoritesCount--;
@@ -90,17 +89,17 @@ const ArticleContent: React.FC<ArticleContentPropsType> = ({
     }
   }
 
-  const [mutateDeleteArticle]=useMutation(api.deleteArticle)
+  const [mutateDeleteArticle] = useMutation(api.deleteArticle);
+  const navigate = useNavigate();
 
-  async function handleClick(){
-    if(!token){
+  async function handleClick() {
+    if (!token) {
       enqueueSnackbar("Please Login first", {
         variant: "error",
       });
-    }
-    else{
-      await mutateDeleteArticle({payload:article.slug,token:token})
-      navigate('/')
+    } else {
+      await mutateDeleteArticle({ payload: article.slug, token: token });
+      navigate("/");
     }
   }
 
@@ -121,10 +120,10 @@ const ArticleContent: React.FC<ArticleContentPropsType> = ({
                 {article.favoritesCount}
               </Typography>
               {article.author.username === auth.username ? (
-              <IconButton className={classes.delete} onClick={handleClick}>
-                <DeleteIcon color="secondary"></DeleteIcon>
-              </IconButton>
-            ) : null}
+                <IconButton className={classes.delete} onClick={handleClick}>
+                  <DeleteIcon color="secondary"></DeleteIcon>
+                </IconButton>
+              ) : null}
             </>
           }
           title={article.title}

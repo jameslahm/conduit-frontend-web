@@ -9,6 +9,14 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import App from "./App";
 import { SnackbarProvider } from "notistack";
 import { ReactQueryDevtools } from "react-query-devtools";
+import {
+  LocationProvider,
+  createMemorySource,
+  createHistory,
+} from "@reach/router";
+
+let source = createMemorySource("/");
+let history = createHistory(source);
 
 const store = createStore(rootReducer);
 
@@ -18,22 +26,23 @@ const AppWrapper: React.FC = (props) => {
   const theme = createMuiTheme(themeOptions);
 
   return (
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider maxSnack={3} autoHideDuration={2000}>
-        <App></App>
-      </SnackbarProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </ThemeProvider>
+    <LocationProvider history={history}>
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider maxSnack={3} autoHideDuration={2000}>
+          <App></App>
+        </SnackbarProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </ThemeProvider>
+    </LocationProvider>
   );
 };
 
 ReactDOM.render(
   // <React.StrictMode>
-    <ReduxStoreProvider store={store}>
-      <AppWrapper />
-    </ReduxStoreProvider>
+  <ReduxStoreProvider store={store}>
+    <AppWrapper />
+  </ReduxStoreProvider>,
   // </React.StrictMode>,
-  ,
   document.getElementById("root")
 );
 

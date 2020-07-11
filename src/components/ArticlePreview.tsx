@@ -18,8 +18,8 @@ import { rootStateType } from "../store";
 import { useSnackbar } from "notistack";
 import { api } from "../utils";
 import { useMutation, queryCache } from "react-query";
-import { navigate } from "@reach/router";
 import Chip from "@material-ui/core/Chip";
+import { useNavigate } from "@reach/router";
 
 interface ArticlePreviewPropsType {
   article: ArticleResponseType;
@@ -49,8 +49,9 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({
   const classes = useStyles();
   const token = useSelector((state: rootStateType) => state.auth.token);
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
   const [mutateFavorite] = useMutation(api.favoriteArticle, {
-    onMutate: (data) => {
+    onMutate: () => {
       const newArtcile = { ...article };
       newArtcile.favorited = true;
       newArtcile.favoritesCount++;
@@ -65,7 +66,7 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({
   });
 
   const [mutateUnFavorite] = useMutation(api.unfavoriteArticle, {
-    onMutate: (data) => {
+    onMutate: () => {
       const newArtcile = { ...article };
       newArtcile.favorited = false;
       newArtcile.favoritesCount--;

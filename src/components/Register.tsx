@@ -7,7 +7,7 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
-import { Link as NavLink, navigate } from "@reach/router";
+import { Link as NavLink, useNavigate } from "@reach/router";
 import validator from "validator";
 import { api } from "../utils";
 import { useDispatch } from "react-redux";
@@ -62,6 +62,7 @@ const Register: React.FC<RegisterPropsType> = () => {
   const [mutate] = useMutation(api.register);
   const { enqueueSnackbar } = useSnackbar();
 
+  const navigate = useNavigate();
   async function handleSubmit(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) {

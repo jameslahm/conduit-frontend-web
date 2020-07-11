@@ -7,8 +7,7 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Autocomplele from "@material-ui/lab/Autocomplete";
 import TabPanel from "./TabPanel";
-import {md} from '../utils'
-
+import { md } from "../utils";
 
 import { rootStateType } from "../store";
 import { useSelector } from "react-redux";
@@ -17,7 +16,7 @@ import { useMutation } from "react-query";
 import { api } from "../utils";
 import { useQuery } from "react-query";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { navigate } from "@reach/router";
+import { useNavigate } from "@reach/router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-
 const EditArticle: React.FC<{ path: string }> = () => {
   const classes = useStyles();
 
@@ -71,6 +69,7 @@ const EditArticle: React.FC<{ path: string }> = () => {
 
   const { data, isLoading } = useQuery(["getTags"], api.getTags);
 
+  const navigate = useNavigate();
   async function handleClick(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) {
@@ -78,11 +77,11 @@ const EditArticle: React.FC<{ path: string }> = () => {
       enqueueSnackbar("Please Login first", { variant: "error" });
     } else {
       try {
-        const data=await mutate({
+        const data = await mutate({
           payload: { article: { title, description, body: mdText, tagList } },
           token,
         });
-        navigate(`/articles/${data.article.slug}`)
+        navigate(`/articles/${data.article.slug}`);
       } catch (err) {}
     }
   }

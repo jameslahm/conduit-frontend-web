@@ -5,7 +5,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import Toolbar from "@material-ui/core/Toolbar";
 import AppBar from "@material-ui/core/AppBar";
-import { Router, Link as NavLink, navigate } from "@reach/router";
+import { Router, Link as NavLink, useNavigate } from "@reach/router";
 import Home from "./components/Home";
 import Register from "./components/Register";
 import Login from "./components/Login";
@@ -45,6 +45,7 @@ const App: React.FC = () => {
   const image = useSelector((state: rootStateType) => state.auth.image);
   const username = useSelector((state: rootStateType) => state.auth.username);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   return (
     <React.Fragment>
