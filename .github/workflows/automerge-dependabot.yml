@@ -1,7 +1,23 @@
 name: Auto approve and merge PRs by dependabot
 
 on:
-  pull_request
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+      - synchronize
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+  status: {}
 
 jobs:
   autoapprove:
@@ -14,6 +30,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN}}"
   automerge:
+    on:
     name: Auto merge after successful checks
     needs: autoapprove
     runs-on: ubuntu-latest
