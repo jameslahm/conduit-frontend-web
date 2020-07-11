@@ -1,6 +1,6 @@
 {
 	"name": "conduit-frontend-web",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"private": true,
 	"main": "public/electron.js",
 	"repository": {
@@ -53,8 +53,9 @@
 		"postinstall": "electron-builder install-app-deps",
 		"package": "yarn build && electron-builder --dir",
 		"dist": "yarn build && electron-builder",
-		"release": "yarn dist && electron-builder -p always",
-		"dotenv": "export $(xargs < .env)"
+		"release": "yarn build && electron-builder -p always",
+		"dotenv": "export $(xargs < .env)",
+		"prebuild": "rimraf build"
 	},
 	"build": {
 		"appId": "com.electron.material-conduit",

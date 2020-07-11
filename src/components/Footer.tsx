@@ -15,7 +15,7 @@ const Footer = () => {
   return (
     <div className={classes.root}>
       <Typography variant="caption">
-        copyright &copy; 2020 jameslahm v0.1.0
+        copyright &copy; 2020 jameslahm v0.2.3
       </Typography>
     </div>
   );
