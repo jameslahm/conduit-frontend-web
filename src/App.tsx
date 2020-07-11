@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
@@ -17,11 +17,10 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import VpnKeyIcon from "@material-ui/icons/VpnKey";
 import CreateIcon from "@material-ui/icons/Create";
 import Avatar from "@material-ui/core/Avatar";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import SettingsIcon from "@material-ui/icons/Settings";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import {logout} from './store'
+import { logout } from "./store";
+import EditArticle from "./components/EditArticle";
+import Profile from "./components/Profile";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    cursor: "pointer",
   },
   navButton: {
     color: theme.palette.primary.contrastText,
@@ -43,18 +43,8 @@ const App: React.FC = () => {
   const classes = useStyles();
   const token = useSelector((state: rootStateType) => state.auth.token);
   const image = useSelector((state: rootStateType) => state.auth.image);
-  const [anchorEl, setAnchorEl] = useState<EventTarget & HTMLButtonElement>(
-    null as any
-  );
-  const dispatch=useDispatch()
-
-  function handleClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    setAnchorEl(event.currentTarget);
-  }
-
-  function handleClose(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    setAnchorEl(null as any);
-  }
+  const username = useSelector((state: rootStateType) => state.auth.username);
+  const dispatch = useDispatch();
 
   return (
     <React.Fragment>
@@ -81,7 +71,7 @@ const App: React.FC = () => {
             </NavLink>
             {token ? (
               <>
-                <NavLink to="/article" className={classes.navLink}>
+                <NavLink to="/article/edit" className={classes.navLink}>
                   <Button
                     className={classes.navButton}
                     startIcon={<CreateIcon></CreateIcon>}
@@ -89,7 +79,10 @@ const App: React.FC = () => {
                     Article
                   </Button>
                 </NavLink>
-                <div className={classes.navLink}>
+                <NavLink
+                  to={`/profiles/${username}`}
+                  className={classes.navLink}
+                >
                   <Button
                     className={classes.navButton}
                     startIcon={
@@ -98,47 +91,20 @@ const App: React.FC = () => {
                         style={{ height: "20px", width: "20px" }}
                       ></Avatar>
                     }
-                    onClick={handleClick}
                   >
                     Account
                   </Button>
-                  <Menu
-                    // TODO: Understand
-                    anchorEl={anchorEl}
-                    getContentAnchorEl={null}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "center",
+                </NavLink>
+                <div className={classes.navLink}>
+                  <Button
+                    className={classes.navButton}
+                    startIcon={<ExitToAppIcon></ExitToAppIcon>}
+                    onClick={() => {
+                      dispatch(logout());
                     }}
-                    transformOrigin={{
-                      vertical: "top",
-                      horizontal: "center",
-                    }}
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
                   >
-                    <MenuItem className={classes.navLink}>
-                      <Button
-                        className={classes.navButton}
-                        startIcon={<SettingsIcon></SettingsIcon>}
-                        color="primary"
-                        variant="contained"
-                      >
-                        Settings
-                      </Button>
-                    </MenuItem>
-                    <MenuItem className={classes.navLink}>
-                      <Button
-                        color="primary"
-                        variant="contained"
-                        className={classes.navButton}
-                        startIcon={<ExitToAppIcon></ExitToAppIcon>}
-                        onClick={() => dispatch(logout())}
-                      >
-                        logout
-                      </Button>
-                    </MenuItem>
-                  </Menu>
+                    logout
+                  </Button>
                 </div>
               </>
             ) : (
@@ -168,6 +134,8 @@ const App: React.FC = () => {
           <Login path="/login"></Login>
           <Register path="/register"></Register>
           <Article path="/articles/:slug"></Article>
+          <EditArticle path="/article/edit"></EditArticle>
+          <Profile path="/profiles/:username"></Profile>
         </Router>
       </div>
     </React.Fragment>
@@ -175,3 +143,41 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+/* <Menu
+// TODO: Understand
+anchorEl={anchorEl}
+getContentAnchorEl={null}
+anchorOrigin={{
+  vertical: "bottom",
+  horizontal: "center",
+}}
+transformOrigin={{
+  vertical: "top",
+  horizontal: "center",
+}}
+open={Boolean(anchorEl)}
+onClose={handleClose}
+>
+<MenuItem className={classes.navLink}>
+  <Button
+    className={classes.navButton}
+    startIcon={<SettingsIcon></SettingsIcon>}
+    color="primary"
+    variant="contained"
+  >
+    Settings
+  </Button>
+</MenuItem>
+<MenuItem className={classes.navLink}>
+  <Button
+    color="primary"
+    variant="contained"
+    className={classes.navButton}
+    startIcon={<ExitToAppIcon></ExitToAppIcon>}
+    onClick={() => dispatch(logout())}
+  >
+    logout
+  </Button>
+</MenuItem>
+</Menu> */

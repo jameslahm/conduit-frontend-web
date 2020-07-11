@@ -19,9 +19,11 @@ import { useSnackbar } from "notistack";
 import { api } from "../utils";
 import { useMutation, queryCache } from "react-query";
 import { navigate } from "@reach/router";
+import Chip from "@material-ui/core/Chip";
 
 interface ArticlePreviewPropsType {
   article: ArticleResponseType;
+  updateFn: (data: any) => any;
   queryKey: [string, ...any[]];
 }
 
@@ -33,46 +35,49 @@ const useStyles = makeStyles((theme) => ({
   favoritesCount: {
     marginRight: `${theme.spacing(1)}px`,
   },
+  tag: {
+    marginRight: `${theme.spacing(0.5)}px`,
+    marginTop: `${theme.spacing(1)}px`,
+  },
 }));
 
 const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({
   article,
+  updateFn,
   queryKey,
 }) => {
   const classes = useStyles();
   const token = useSelector((state: rootStateType) => state.auth.token);
   const { enqueueSnackbar } = useSnackbar();
-  const [mutate] = useMutation(
-    article.favorited ? api.unfavoriteArticle : api.favoriteArticle,
-    {
-      onMutate: (data) => {
-        queryCache.cancelQueries(queryKey);
+  const [mutateFavorite] = useMutation(api.favoriteArticle, {
+    onMutate: (data) => {
+      const newArtcile = { ...article };
+      newArtcile.favorited = true;
+      newArtcile.favoritesCount++;
+      return updateFn(newArtcile);
+    },
+    onError: (err, data, rollback: any) => {
+      rollback();
+    },
+    onSettled: () => {
+      queryCache.invalidateQueries(queryKey);
+    },
+  });
 
-        const previousData = queryCache.getQueryData(queryKey);
-
-        queryCache.setQueryData(queryKey, (old: any) => {
-          const articles = old.articles.map((item: any) => {
-            if (item.slug === article.slug) {
-              item.favoritesCount = article.favorited
-                ? article.favoritesCount - 1
-                : article.favoritesCount + 1;
-              item.favorited = !article.favorited;
-            }
-            return item;
-          });
-          return { articles: articles, articlesCount: old.articlesCount };
-        });
-
-        return () => queryCache.setQueryData(queryKey, previousData);
-      },
-      onError: (err, data, rollback: any) => {
-        rollback();
-      },
-      onSettled: () => {
-        queryCache.invalidateQueries(queryKey);
-      },
-    }
-  );
+  const [mutateUnFavorite] = useMutation(api.unfavoriteArticle, {
+    onMutate: (data) => {
+      const newArtcile = { ...article };
+      newArtcile.favorited = false;
+      newArtcile.favoritesCount--;
+      return updateFn(newArtcile);
+    },
+    onError: (err, data, rollback: any) => {
+      rollback();
+    },
+    onSettled: () => {
+      queryCache.invalidateQueries(queryKey);
+    },
+  });
 
   async function handleFavorite() {
     if (!token) {
@@ -80,7 +85,11 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({
         variant: "error",
       });
     } else {
-      await mutate({ payload: article.slug, token: token });
+      if (article.favorited) {
+        await mutateUnFavorite({ payload: article.slug, token: token });
+      } else {
+        await mutateFavorite({ payload: article.slug, token: token });
+      }
     }
   }
 
@@ -89,13 +98,17 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({
       <Card>
         <CardHeader
           avatar={
-            <Avatar
-              src={
-                article.author.image
-                  ? article.author.image
-                  : "https://i.pravatar.cc/40"
-              }
-            ></Avatar>
+            <IconButton
+              onClick={() => navigate(`/profiles/${article.author.username}`)}
+            >
+              <Avatar
+                src={
+                  article.author.image
+                    ? article.author.image
+                    : "https://i.pravatar.cc/40"
+                }
+              ></Avatar>
+            </IconButton>
           }
           action={
             <>
@@ -120,6 +133,20 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({
           </Typography>
           <Typography variant="subtitle2" className={classes.content}>
             {article.description}
+          </Typography>
+          <Typography variant="caption" className={classes.content}>
+            {article.tagList.map((tag) => {
+              return (
+                <Chip
+                  label={tag}
+                  key={tag}
+                  variant="default"
+                  className={classes.tag}
+                  size="small"
+                  onClick={() => {}}
+                ></Chip>
+              );
+            })}
           </Typography>
         </CardContent>
         <CardActions>

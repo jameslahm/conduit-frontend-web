@@ -15,6 +15,8 @@ import { rootStateType } from "../store";
 import { useSnackbar } from "notistack";
 import { useMutation, queryCache } from "react-query";
 import ReactMarkdown from "react-markdown";
+import DeleteIcon from '@material-ui/icons/Delete'
+import { navigate } from "@reach/router";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,63 +25,82 @@ const useStyles = makeStyles((theme) => ({
   favoritesCount: {
     marginRight: `${theme.spacing(1)}px`,
   },
+  delete:{
+  }
 }));
 
 interface ArticleContentPropsType {
   article: ArticleResponseType;
   queryKey: [string, ...any[]];
+  updateFn: (data: any) => any;
 }
 
 const ArticleContent: React.FC<ArticleContentPropsType> = ({
   article,
   queryKey,
+  updateFn,
 }) => {
   const classes = useStyles();
 
   const token = useSelector((state: rootStateType) => state.auth.token);
+  const auth = useSelector((state: rootStateType) => state.auth);
   const { enqueueSnackbar } = useSnackbar();
-  const [mutate] = useMutation(
-    article.favorited ? api.unfavoriteArticle : api.favoriteArticle,
-    {
-      onMutate: (data) => {
-        queryCache.cancelQueries(queryKey);
 
-        const previousData = queryCache.getQueryData(queryKey);
+  const [mutateFavorite] = useMutation(api.favoriteArticle, {
+    onMutate: (data) => {
+      const newArticle = { ...article };
+      newArticle.favorited = true;
+      newArticle.favoritesCount++;
+      return updateFn(newArticle);
+    },
+    onError: (err, data, rollback: any) => {
+      rollback();
+    },
+    onSettled: () => {
+      queryCache.invalidateQueries(queryKey);
+    },
+  });
 
-        queryCache.setQueryData(
-          queryKey,
-          (old: { article: ArticleResponseType } | undefined) => {
-            if (old) {
-              const favorited = !old.article.favorited;
-              const favoritesCount = favorited
-                ? old.article.favoritesCount + 1
-                : old.article.favoritesCount - 1;
-              return {
-                article: { ...old.article, favorited, favoritesCount },
-              };
-            } else {
-              return old;
-            }
-          }
-        );
+  const [mutateUnFavorite] = useMutation(api.unfavoriteArticle, {
+    onMutate: (data) => {
+      const newArticle = { ...article };
+      newArticle.favorited = false;
+      newArticle.favoritesCount--;
+      return updateFn(newArticle);
+    },
+    onError: (err, data, rollback: any) => {
+      rollback();
+    },
+    onSettled: () => {
+      queryCache.invalidateQueries(queryKey);
+    },
+  });
 
-        return () => queryCache.setQueryData(queryKey, previousData);
-      },
-      onError: (err, data, rollback: any) => {
-        rollback();
-      },
-      onSettled: () => {
-        queryCache.invalidateQueries(queryKey);
-      },
-    }
-  );
   async function handleFavorite() {
     if (!token) {
       enqueueSnackbar("Please Login first", {
         variant: "error",
       });
     } else {
-      await mutate({ payload: article.slug, token: token });
+      if (article.favorited) {
+        await mutateUnFavorite({ payload: article.slug, token: token });
+      } else {
+        await mutateFavorite({ payload: article.slug, token: token });
+      }
+    }
+  }
+
+  const [mutateDeleteArticle]=useMutation(api.deleteArticle)
+
+  async function handleClick(){
+    if(!token){
+      enqueueSnackbar("Please Login first", {
+        variant: "error",
+      });
+    }
+    else{
+      await mutateDeleteArticle({payload:article.slug,token:token})
+      navigate('/')
     }
   }
 
@@ -99,15 +120,19 @@ const ArticleContent: React.FC<ArticleContentPropsType> = ({
               <Typography variant="caption" className={classes.favoritesCount}>
                 {article.favoritesCount}
               </Typography>
+              {article.author.username === auth.username ? (
+              <IconButton className={classes.delete} onClick={handleClick}>
+                <DeleteIcon color="secondary"></DeleteIcon>
+              </IconButton>
+            ) : null}
             </>
           }
           title={article.title}
           subheader={format(new Date(article.createdAt), "LLL d,  yyyy")}
-        >
-        </CardHeader>
+        ></CardHeader>
         <CardContent>
-            <ReactMarkdown source={article.body}></ReactMarkdown>
-          </CardContent>
+          <ReactMarkdown source={article.body}></ReactMarkdown>
+        </CardContent>
       </Card>
     </div>
   );
@@ -118,7 +143,7 @@ const ArticleContentSkeleton = () => {
   return (
     <div className={classes.root}>
       <Skeleton
-        width="90%"
+        width="100%"
         variant="rect"
         height={"80vh"}
         style={{ margin: "auto" }}

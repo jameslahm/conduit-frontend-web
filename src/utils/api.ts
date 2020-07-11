@@ -247,11 +247,12 @@ const api = {
       parseResponse
     );
   },
-  getArticle({ payload }: { payload: string }) {
+  getArticle({ payload,token }: { payload: string,token:string | undefined }) {
     return fetch(`${BASEURL}/articles/${payload}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: token ? `Token ${token}` : "",
       },
     }).then<{ article: ArticleResponseType }>(parseResponse);
   },
@@ -322,13 +323,15 @@ const api = {
   }: {
     payload: string;
     token: string | undefined;
-  }) {
+  },{signal}:{signal:AbortSignal}) {
     return fetch(`${BASEURL}/articles/${payload}/comments`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: token ? `Token ${token}` : "",
+        
       },
+      signal
     }).then<{ comments: CommentResponseType[] }>(parseResponse);
   },
   deleteComment({

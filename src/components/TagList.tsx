@@ -49,7 +49,7 @@ const TagList: React.FC<TagListPropsType> = ({
   return (
     <div className={classes.root}>
       {isLoading || !data ? (
-        <Skeleton variant="rect" height={200}></Skeleton>
+        <Skeleton variant="rect" height={300}></Skeleton>
       ) : (
         <Paper className={classes.content}>
           {["GLOBAL", "FEED"].map((tag) => (

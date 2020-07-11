@@ -28,11 +28,12 @@ const AppWrapper: React.FC = (props) => {
 };
 
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <ReduxStoreProvider store={store}>
       <AppWrapper />
     </ReduxStoreProvider>
-  </React.StrictMode>,
+  // </React.StrictMode>,
+  ,
   document.getElementById("root")
 );
 
