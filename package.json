@@ -68,6 +68,6 @@
 		"babel-plugin-prismjs": "^2.0.1",
 		"customize-cra": "^1.0.0",
 		"react-app-rewired": "^2.1.6",
-		"typescript": "~3.8.2"
+		"typescript": "~3.9.6"
 	}
 }
