@@ -1,6 +1,6 @@
 {
 	"name": "conduit-frontend-web",
-	"version": "0.1.0",
+	"version": "0.2.2",
 	"private": true,
 	"main": "public/electron.js",
 	"repository": {
@@ -22,6 +22,7 @@
 		"@testing-library/user-event": "^7.1.2",
 		"date-fns": "^2.14.0",
 		"electron-is-dev": "^1.2.0",
+		"electron-updater": "^4.3.1",
 		"markdown-it": "^11.0.0",
 		"markdown-it-abbr": "^1.0.4",
 		"markdown-it-emoji": "^1.4.0",
@@ -41,8 +42,8 @@
 		"react-scripts": "3.4.1",
 		"redux": "^4.0.5",
 		"validator": "^13.1.1"
-  },
-  "homepage": "./",
+	},
+	"homepage": "./",
 	"scripts": {
 		"electron-start": "concurrently \"wait-on http-get://localhost:3000 && electron .\" \"cross-env BROWSER=none yarn start\"",
 		"start": "react-app-rewired start",
@@ -51,24 +52,25 @@
 		"eject": "react-scripts eject",
 		"postinstall": "electron-builder install-app-deps",
 		"package": "yarn build && electron-builder --dir",
-    "dist": "yarn build && electron-builder",
-    "release":"yarn dist && electron-builder -p always"
+		"dist": "yarn build && electron-builder",
+		"release": "yarn dist && electron-builder -p always",
+		"dotenv": "export $(xargs < .env)"
 	},
 	"build": {
 		"appId": "com.electron.material-conduit",
-    "productName": "Conduit",
-    "files":[
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "publish":{
-      "provider":"github",
-      "repo":"conduit-frontend-web",
-      "owner":"jameslahm"
-    },
-    "win":{
-      "icon":"build/icon.png"
-    }
+		"productName": "Conduit",
+		"files": [
+			"build/**/*",
+			"node_modules/**/*"
+		],
+		"publish": {
+			"provider": "github",
+			"repo": "conduit-frontend-web",
+			"owner": "jameslahm"
+		},
+		"win": {
+			"icon": "build/icon.png"
+		}
 	},
 	"husky": {
 		"hooks": {
@@ -122,6 +124,7 @@
 		"lint-staged": "^10.2.11",
 		"prettier": "^2.0.5",
 		"react-app-rewired": "^2.1.6",
+		"rimraf": "^3.0.2",
 		"typescript": "~3.9.6",
 		"wait-on": "^5.1.0"
 	}
