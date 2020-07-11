@@ -7,6 +7,7 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.primary.main}`,
     textAlign: "center",
     marginBottom: `${theme.spacing(2)}px`,
+    marginTop: `${theme.spacing(2)}px`,
   },
 }));
 
@@ -15,7 +16,7 @@ const Footer = () => {
   return (
     <div className={classes.root}>
       <Typography variant="caption">
-        copyright &copy; 2020 jameslahm v0.2.3
+        copyright &copy; 2020 jameslahm v0.2.4
       </Typography>
     </div>
   );
