@@ -1,13 +1,9 @@
+import { Login } from "../../utils/__generated__/Login";
+
 const LOGIN = "LOGIN";
 const LOGOUT = "LOGOUT";
 
-interface AuthStateType {
-  username: string;
-  token: string;
-  bio: string;
-  image: string;
-  email: string;
-}
+type AuthStateType = Exclude<Login["login"], null>;
 
 interface LogInActionType {
   type: typeof LOGIN;
@@ -22,11 +18,13 @@ type AuthActionType = LogInActionType | LogOutActionType;
 
 const login = (
   payload: AuthStateType = {
+    __typename: "User",
     username: "",
     token: "",
     bio: "",
     image: "",
     email: "",
+    id: "",
   }
 ): AuthActionType => {
   return {

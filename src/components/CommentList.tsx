@@ -1,10 +1,8 @@
-import { CommentResponseType } from "../utils";
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Comment from "./Comment";
-
 import { Typography } from "@material-ui/core";
-
+import { AddComment } from "../utils/__generated__/AddComment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -14,20 +12,18 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 interface CommentListPropsType {
-  comments: CommentResponseType[];
-  deleteCommentMutate:(data:any)=>any
+  comments: Exclude<AddComment["addComment"], null>[];
 }
 
-const CommentList: React.FC<CommentListPropsType> = ({ comments,deleteCommentMutate }) => {
+const CommentList: React.FC<CommentListPropsType> = ({ comments }) => {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <Typography variant="h5">Comments</Typography>
       {comments.map((comment) => {
-        return <Comment deleteCommentMutate={deleteCommentMutate} comment={comment} key={comment.id}></Comment>;
+        return <Comment comment={comment} key={comment.id}></Comment>;
       })}
-      
     </div>
   );
 };

@@ -2,14 +2,11 @@ import Avatar from "@material-ui/core/Avatar";
 import React, { useState, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Skeleton from "@material-ui/lab/Skeleton";
-import { ProfileResponseType, UpdateUserRequestBody } from "../utils";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import CardActions from "@material-ui/core/CardActions";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
-import { useMutation, queryCache } from "react-query";
-import { api } from "../utils";
 import { useSelector, useDispatch } from "react-redux";
 import { useSnackbar } from "notistack";
 import { rootStateType, AuthStateType, login } from "../store";
@@ -18,6 +15,21 @@ import TextField from "@material-ui/core/TextField";
 import Fade from "@material-ui/core/Fade";
 import validator from "validator";
 import Paper from "@material-ui/core/Paper";
+import { ProfileFragment } from "../utils/__generated__/ProfileFragment";
+import {
+  FollowUser,
+  FollowUserVariables,
+} from "../utils/__generated__/FollowUser";
+import { FOLLOW_USER, UNFOLLOW_USER, UPDATE_USER } from "../utils";
+import { useMutation } from "@apollo/react-hooks";
+import {
+  UnFollowUser,
+  UnFollowUserVariables,
+} from "../utils/__generated__/UnFollowUser";
+import {
+  UpdateUserVariables,
+  UpdateUser,
+} from "../utils/__generated__/UpdateUser";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,9 +74,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface UserAvatarOther {
-  user: ProfileResponseType["profile"];
-  queryKey: [string, ...any[]];
-  updateFn: (data: any) => any;
+  user: ProfileFragment;
 }
 
 interface UserAvatarSelf {
@@ -101,7 +111,10 @@ const UserAvatarSelf: React.FC<UserAvatarSelf> = ({ user }) => {
   const [password2Validation, setPassword2Validation] = useState("");
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
-  const [mutate] = useMutation(api.updateUser);
+
+  const [updateUser] = useMutation<UpdateUser, UpdateUserVariables>(
+    UPDATE_USER
+  );
   const { enqueueSnackbar } = useSnackbar();
   const imageContainer = useRef<HTMLInputElement>(null as any);
   async function handleSubmit(
@@ -135,20 +148,21 @@ const UserAvatarSelf: React.FC<UserAvatarSelf> = ({ user }) => {
       return;
     } else {
       try {
-        const requestBody: UpdateUserRequestBody = {
-          user: {
-            username,
-            email,
-          },
+        const input: UpdateUserVariables["input"] = {
+          username: username,
+          email: email,
         };
         if (password !== INITAL_FAKE_PASSWORD) {
-          requestBody.user.password = password;
+          input.password = password;
         }
-        const data = await mutate({
-          payload: requestBody,
-          token: token,
+        const res = await updateUser({
+          variables: {
+            input: input,
+          },
         });
-        dispatch(login(data.user))
+        if (res.data?.updateUser) {
+          dispatch(login(res.data?.updateUser));
+        }
       } catch (err) {
         enqueueSnackbar(err.message, { variant: "error" });
       }
@@ -168,13 +182,16 @@ const UserAvatarSelf: React.FC<UserAvatarSelf> = ({ user }) => {
       const file = event.target.files[0];
       const reader = new FileReader();
       reader.onload = async function (e) {
-        const data = await mutate({
-          payload: {
-            user: { image: (e.target ? e.target.result : user.image) as any },
+        const res = await updateUser({
+          variables: {
+            input: {
+              image: (e.target ? e.target.result : user.image) as any,
+            },
           },
-          token: token,
         });
-        dispatch(login(data.user));
+        if (res.data?.updateUser) {
+          dispatch(login(res.data.updateUser));
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -271,42 +288,34 @@ const UserAvatarSelf: React.FC<UserAvatarSelf> = ({ user }) => {
   );
 };
 
-const UserAvatarOther = ({
-  user,
-  queryKey,
-  updateFn,
-}: {
-  user: ProfileResponseType["profile"];
-  queryKey: [string, ...any[]];
-  updateFn: (data: any) => any;
-}) => {
+const UserAvatarOther = ({ user }: { user: ProfileFragment }) => {
   const classes = useStyles();
-  const [mutateFollow] = useMutation(api.followUser, {
-    onMutate: () => {
-      const newUser = { ...user };
-      newUser.following = true;
-      return updateFn(newUser);
+  const [follow] = useMutation<FollowUser, FollowUserVariables>(FOLLOW_USER, {
+    variables: {
+      username: user.username,
     },
-    onError: (err, data, rollback: any) => {
-      rollback();
-    },
-    onSettled: () => {
-      queryCache.invalidateQueries(queryKey);
+    optimisticResponse: {
+      follow: {
+        ...user,
+        following: true,
+      },
     },
   });
-  const [mutateUnFollow] = useMutation(api.unfollowUser, {
-    onMutate: () => {
-      const newUser = { ...user };
-      newUser.following = false;
-      return updateFn(newUser);
-    },
-    onError: (err, data, rollback: any) => {
-      rollback();
-    },
-    onSettled: () => {
-      queryCache.invalidateQueries(queryKey);
-    },
-  });
+
+  const [unfollow] = useMutation<UnFollowUser, UnFollowUserVariables>(
+    UNFOLLOW_USER,
+    {
+      variables: {
+        username: user.username,
+      },
+      optimisticResponse: {
+        unfollow: {
+          ...user,
+          following: false,
+        },
+      },
+    }
+  );
 
   const token = useSelector((state: rootStateType) => state.auth.token);
   const { enqueueSnackbar } = useSnackbar();
@@ -317,9 +326,9 @@ const UserAvatarOther = ({
       return;
     } else {
       if (user.following) {
-        await mutateUnFollow({ payload: user.username, token: token });
+        await follow();
       } else {
-        await mutateFollow({ payload: user.username, token: token });
+        await unfollow();
       }
     }
   }

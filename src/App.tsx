@@ -22,16 +22,16 @@ import { logout } from "./store";
 import EditArticle from "./components/EditArticle";
 import Profile from "./components/Profile";
 import Footer from "./components/Footer";
-import { useSnackbar } from "notistack";
+// import { useSnackbar } from "notistack";
 
-declare global {
-  interface Window {
-    api: {
-      send: (channel: string, ...args: any[]) => void;
-      recieve: (channel: string, fn: (...args: any[]) => void) => void;
-    };
-  }
-}
+// declare global {
+//   interface Window {
+//     api: {
+//       send: (channel: string, ...args: any[]) => void;
+//       recieve: (channel: string, fn: (...args: any[]) => void) => void;
+//     };
+//   }
+// }
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,31 +51,31 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const App: React.FC = () => {
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  window.api.recieve("update_downloaded", () => {
-    enqueueSnackbar("Update Available, Restart Now ?", {
-      variant: "success",
-      autoHideDuration: null,
-      action: (key) => (
-        <>
-          <Button
-            onClick={() => {
-              window.api.send("restart_app");
-            }}
-          >
-            Restart
-          </Button>
-          <Button
-            onClick={() => {
-              closeSnackbar(key);
-            }}
-          >
-            Dismiss
-          </Button>
-        </>
-      ),
-    });
-  });
+  // const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  // window.api.recieve("update_downloaded", () => {
+  //   enqueueSnackbar("Update Available, Restart Now ?", {
+  //     variant: "success",
+  //     autoHideDuration: null,
+  //     action: (key) => (
+  //       <>
+  //         <Button
+  //           onClick={() => {
+  //             window.api.send("restart_app");
+  //           }}
+  //         >
+  //           Restart
+  //         </Button>
+  //         <Button
+  //           onClick={() => {
+  //             closeSnackbar(key);
+  //           }}
+  //         >
+  //           Dismiss
+  //         </Button>
+  //       </>
+  //     ),
+  //   });
+  // });
 
   const classes = useStyles();
   const token = useSelector((state: rootStateType) => state.auth.token);

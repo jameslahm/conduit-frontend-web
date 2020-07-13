@@ -1,5 +1,4 @@
 import Card from "@material-ui/core/Card";
-import { CommentResponseType, md } from "../utils";
 import React from "react";
 import CardHeader from "@material-ui/core/CardHeader";
 import Avatar from "@material-ui/core/Avatar";
@@ -10,11 +9,17 @@ import { useSelector } from "react-redux";
 import { rootStateType } from "../store";
 import DeleteIcon from "@material-ui/icons/Delete";
 import IconButton from "@material-ui/core/IconButton";
-import {useSnackbar} from 'notistack'
+import { useSnackbar } from "notistack";
+import { AddComment } from "../utils/__generated__/AddComment";
+import { md, DELETE_COMMENT } from "../utils";
+import { useMutation } from "@apollo/react-hooks";
+import {
+  DeleteComment,
+  DeleteCommentVariables,
+} from "../utils/__generated__/DeleteComment";
 
 interface CommentPropsType {
-  comment: CommentResponseType;
-  deleteCommentMutate: (data: any) => any;
+  comment: Exclude<AddComment["addComment"], null>;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -24,17 +29,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Comment: React.FC<CommentPropsType> = ({ comment, deleteCommentMutate }) => {
+const Comment: React.FC<CommentPropsType> = ({ comment }) => {
   const classes = useStyles();
   const auth = useSelector((state: rootStateType) => state.auth);
-  const {enqueueSnackbar}=useSnackbar()
-
-  function handleClick(){
-    if(!auth.token){
-      enqueueSnackbar('Please Login first',{variant:'error'})
+  const { enqueueSnackbar } = useSnackbar();
+  const [deleteComment] = useMutation<DeleteComment, DeleteCommentVariables>(
+    DELETE_COMMENT,
+    {
+      variables: {
+        id: comment.id,
+      },
     }
-    else{
-      deleteCommentMutate(comment)
+  );
+
+  function handleClick() {
+    if (!auth.token) {
+      enqueueSnackbar("Please Login first", { variant: "error" });
+    } else {
+      deleteComment();
     }
   }
 

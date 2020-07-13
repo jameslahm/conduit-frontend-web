@@ -10,6 +10,8 @@ const initialState: AuthStateType = auth
       bio: "",
       image: "",
       email: "",
+      id: "",
+      __typename: "User",
     };
 
 const authReducer = (
@@ -31,6 +33,8 @@ const authReducer = (
         bio: "",
         image: "",
         email: "",
+        __typename: "User",
+        id: "",
       };
     default:
       return state;

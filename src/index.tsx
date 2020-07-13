@@ -8,15 +8,16 @@ import { rootStateType, rootReducer } from "./store";
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import App from "./App";
 import { SnackbarProvider } from "notistack";
-import { ReactQueryDevtools } from "react-query-devtools";
-import {
-  LocationProvider,
-  createMemorySource,
-  createHistory,
-} from "@reach/router";
+import { ApolloProvider } from "@apollo/react-hooks";
+import { client } from "./utils";
+// import {
+//   LocationProvider,
+//   createMemorySource,
+//   createHistory,
+// } from "@reach/router";
 
-let source = createMemorySource("/");
-let history = createHistory(source);
+// let source = createMemorySource("/");
+// let history = createHistory(source);
 
 const store = createStore(rootReducer);
 
@@ -26,14 +27,15 @@ const AppWrapper: React.FC = (props) => {
   const theme = createMuiTheme(themeOptions);
 
   return (
-    <LocationProvider history={history}>
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider maxSnack={3} autoHideDuration={2000}>
+    // <LocationProvider history={history}>
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider maxSnack={3} autoHideDuration={2000}>
+        <ApolloProvider client={client}>
           <App></App>
-        </SnackbarProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </ThemeProvider>
-    </LocationProvider>
+        </ApolloProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
+    // </LocationProvider>
   );
 };
 
