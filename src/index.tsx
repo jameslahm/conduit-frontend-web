@@ -10,14 +10,14 @@ import App from "./App";
 import { SnackbarProvider } from "notistack";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { client } from "./utils";
-// import {
-//   LocationProvider,
-//   createMemorySource,
-//   createHistory,
-// } from "@reach/router";
+import {
+  LocationProvider,
+  createMemorySource,
+  createHistory,
+} from "@reach/router";
 
-// let source = createMemorySource("/");
-// let history = createHistory(source);
+let source = createMemorySource("/");
+let history = createHistory(source);
 
 const store = createStore(rootReducer);
 
@@ -27,15 +27,15 @@ const AppWrapper: React.FC = (props) => {
   const theme = createMuiTheme(themeOptions);
 
   return (
-    // <LocationProvider history={history}>
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider maxSnack={3} autoHideDuration={2000}>
-        <ApolloProvider client={client}>
-          <App></App>
-        </ApolloProvider>
-      </SnackbarProvider>
-    </ThemeProvider>
-    // </LocationProvider>
+    <LocationProvider history={history}>
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider maxSnack={3} autoHideDuration={2000}>
+          <ApolloProvider client={client}>
+            <App></App>
+          </ApolloProvider>
+        </SnackbarProvider>
+      </ThemeProvider>
+    </LocationProvider>
   );
 };
 

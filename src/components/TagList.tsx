@@ -3,11 +3,12 @@ import Skeleton from "@material-ui/lab/Skeleton";
 import { makeStyles } from "@material-ui/core/styles";
 import Chip from "@material-ui/core/Chip";
 import Paper from "@material-ui/core/Paper";
-import { useQuery } from "react-query";
-import { api } from "../utils";
 import { useSelector } from "react-redux";
 import { rootStateType } from "../store";
 import { useSnackbar } from "notistack";
+import { useQuery } from "@apollo/react-hooks";
+import { GetTags } from "../utils/__generated__/GetTags";
+import { GET_TAGS } from "../utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,9 +34,7 @@ const TagList: React.FC<TagListPropsType> = ({
   const classes = useStyles();
   const token = useSelector((state: rootStateType) => state.auth.token);
   const { enqueueSnackbar } = useSnackbar();
-  const { data, isLoading } = useQuery(["getTags"], (key) => {
-    return api.getTags();
-  });
+  const { data: tagsData, loading } = useQuery<GetTags>(GET_TAGS);
 
   function handleClick(tag: string) {
     if (tag === "FEED") {
@@ -48,7 +47,7 @@ const TagList: React.FC<TagListPropsType> = ({
 
   return (
     <div className={classes.root}>
-      {isLoading || !data ? (
+      {loading || !tagsData?.getTags ? (
         <Skeleton variant="rect" height={300}></Skeleton>
       ) : (
         <Paper className={classes.content}>
@@ -62,7 +61,7 @@ const TagList: React.FC<TagListPropsType> = ({
               onClick={() => handleClick(tag)}
             ></Chip>
           ))}
-          {data.tags.map((tag) => (
+          {(tagsData.getTags as string[]).map((tag) => (
             <Chip
               label={tag}
               key={tag}

@@ -17,7 +17,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const link = new HttpLink({
-  uri: "http://localhost:3000/graphql",
+  uri: "http://localhost:4000/graphql",
 });
 
 const cache = new InMemoryCache();
@@ -197,6 +197,75 @@ export const DELETE_ARTICLE = gql`
       }
     }
   }
+`;
+
+export const REGISTER = gql`
+  mutation Register($input: RegisterInput!) {
+    register(input: $input) {
+      ...UserFragment
+    }
+  }
+  ${UserFragment}
+`;
+
+export const CREATE_ARTICLE = gql`
+  mutation CreateArticle($input: CreateArticleInput!) {
+    createArticle(input: $input) {
+      ...ArticleFragment
+      author {
+        ...ProfileFragment
+      }
+    }
+  }
+  ${ArticleFragment}
+  ${ProfileFragment}
+`;
+
+export const GET_TAGS = gql`
+  query GetTags {
+    getTags
+  }
+`;
+
+export const GET_PROFILE = gql`
+  query GetProfile($username: String!) {
+    getProfile(username: $username) {
+      ...ProfileFragment
+    }
+  }
+  ${ProfileFragment}
+`;
+
+export const GET_FEED_ARTICLES = gql`
+  query GetFeedArticles($input: GetFeedArticlesInput!) {
+    getFeedArticles(input: $input) {
+      articles {
+        ...ArticleFragment
+        author {
+          ...ProfileFragment
+        }
+      }
+      articlesCount
+    }
+  }
+  ${ArticleFragment}
+  ${ProfileFragment}
+`;
+
+export const GET_ALL_ARTICLES = gql`
+  query GetAllArticles($input: GetAllArticlesInput!) {
+    getAllArticles(input: $input) {
+      articles {
+        ...ArticleFragment
+        author {
+          ...ProfileFragment
+        }
+      }
+      articlesCount
+    }
+  }
+  ${ArticleFragment}
+  ${ProfileFragment}
 `;
 
 export { client };

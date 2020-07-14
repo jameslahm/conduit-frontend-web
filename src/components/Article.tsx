@@ -21,6 +21,7 @@ import { GET_ARTICLE } from "../utils";
 import {
   GetComments,
   GetCommentsVariables,
+  GetComments_getComments_comments,
 } from "../utils/__generated__/GetComments";
 import {
   AddComment,
@@ -147,7 +148,10 @@ const Article: React.FC<ArticlePropsType> = () => {
 
           {commentsData?.getComments ? (
             <CommentList
-              comments={commentsData.getComments.comments}
+              comments={
+                commentsData.getComments
+                  .comments as GetComments_getComments_comments[]
+              }
             ></CommentList>
           ) : null}
           <div className={classes.comment}>

@@ -4,11 +4,15 @@ import Grid from "@material-ui/core/Grid";
 import { useParams } from "@reach/router";
 import { rootStateType } from "../store";
 import { useSelector } from "react-redux";
-import { QueryKeyType, api, ProfileResponseType } from "../utils";
-import { useQuery, queryCache } from "react-query";
 import { UserAvatar, UserAvatarSkeleton } from "./UserAvatar";
 import { ArticleContentSkeleton } from "./ArticleContent";
 import ProfileTab from "./ProfileTab";
+import { useQuery } from "@apollo/react-hooks";
+import {
+  GetProfile,
+  GetProfileVariables,
+} from "../utils/__generated__/GetProfile";
+import { GET_PROFILE } from "../utils";
 
 interface ArticlePropsType {
   path: string;
@@ -27,32 +31,16 @@ const Profile: React.FC<ArticlePropsType> = () => {
   const classes = useStyles();
   const { username }: { username: string } = useParams();
   const auth = useSelector((state: rootStateType) => state.auth);
-  const queryKey: QueryKeyType = ["getProfile", { payload: username, token:auth.token }];
-  const { data, isLoading } = useQuery(queryKey, (key, options) => {
-    return api.getProfile(options);
+  const { data: profileData, loading } = useQuery<
+    GetProfile,
+    GetProfileVariables
+  >(GET_PROFILE, {
+    variables: {
+      username: username,
+    },
   });
 
-  const updateProfileFn = (data: ProfileResponseType["profile"]) => {
-    queryCache.cancelQueries(queryKey);
-
-    const previousData = queryCache.getQueryData(queryKey);
-
-    queryCache.setQueryData(
-      queryKey,
-      (old: ProfileResponseType | undefined) => {
-        if (!old) {
-          return old;
-        } else {
-          const newProfile = { profile: data };
-          return newProfile;
-        }
-      }
-    );
-
-    return () => queryCache.setQueryData(queryKey, previousData);
-  };
-
-  if (isLoading || !data) {
+  if (loading || !profileData?.getProfile) {
     return (
       <div className={classes.root}>
         <Grid container justify="space-between" alignItems="flex-start">
@@ -71,18 +59,14 @@ const Profile: React.FC<ArticlePropsType> = () => {
     <div className={classes.root}>
       <Grid container justify="space-between" alignItems="flex-start">
         <Grid item xs={12} md={3}>
-          {data.profile.username === auth.username ? (
+          {profileData.getProfile.username === auth.username ? (
             <UserAvatar.self user={auth}></UserAvatar.self>
           ) : (
-            <UserAvatar.other
-              user={data.profile}
-              queryKey={queryKey}
-              updateFn={updateProfileFn}
-            ></UserAvatar.other>
+            <UserAvatar.other user={profileData.getProfile}></UserAvatar.other>
           )}
         </Grid>
         <Grid item xs={12} md={9}>
-          <ProfileTab user={data.profile}></ProfileTab>
+          <ProfileTab user={profileData.getProfile}></ProfileTab>
         </Grid>
       </Grid>
     </div>

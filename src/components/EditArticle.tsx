@@ -7,16 +7,19 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Autocomplele from "@material-ui/lab/Autocomplete";
 import TabPanel from "./TabPanel";
-import { md } from "../utils";
+import { md, CREATE_ARTICLE, GET_TAGS } from "../utils";
 
 import { rootStateType } from "../store";
 import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
-import { useMutation } from "react-query";
-import { api } from "../utils";
-import { useQuery } from "react-query";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { useNavigate } from "@reach/router";
+import { useMutation, useQuery } from "@apollo/react-hooks";
+import {
+  CreateArticle,
+  CreateArticleVariables,
+} from "../utils/__generated__/CreateArticle";
+import { GetTags } from "../utils/__generated__/GetTags";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,12 +65,25 @@ const EditArticle: React.FC<{ path: string }> = () => {
   const [status, setStatus] = useState<0 | 1>(0);
   const token = useSelector((state: rootStateType) => state.auth.token);
   const { enqueueSnackbar } = useSnackbar();
-  const [mutate] = useMutation(api.createArticle);
   const [title, setTitle] = useState("Hello");
   const [description, setDescription] = useState("Nice to meet You!");
   const [tagList, setTagList] = useState<string[]>([]);
 
-  const { data, isLoading } = useQuery(["getTags"], api.getTags);
+  const { data: tagsData, loading } = useQuery<GetTags>(GET_TAGS);
+
+  const [createArticle] = useMutation<CreateArticle, CreateArticleVariables>(
+    CREATE_ARTICLE,
+    {
+      variables: {
+        input: {
+          body: mdText,
+          title: title,
+          description: description,
+          tagList: tagList,
+        },
+      },
+    }
+  );
 
   const navigate = useNavigate();
   async function handleClick(
@@ -77,11 +93,10 @@ const EditArticle: React.FC<{ path: string }> = () => {
       enqueueSnackbar("Please Login first", { variant: "error" });
     } else {
       try {
-        const data = await mutate({
-          payload: { article: { title, description, body: mdText, tagList } },
-          token,
-        });
-        navigate(`/articles/${data.article.slug}`);
+        const res = await createArticle();
+        if (res.data?.createArticle) {
+          navigate(`/articles/${res.data.createArticle.slug}`);
+        }
       } catch (err) {}
     }
   }
@@ -108,8 +123,8 @@ const EditArticle: React.FC<{ path: string }> = () => {
         multiple
         className={classes.input}
         ChipProps={{ variant: "outlined", color: "primary" }}
-        options={data ? data.tags : []}
-        loading={isLoading}
+        options={tagsData?.getTags ? (tagsData.getTags as string[]) : []}
+        loading={loading}
         value={tagList}
         onChange={(e, v) => {
           setTagList(v);
@@ -123,7 +138,7 @@ const EditArticle: React.FC<{ path: string }> = () => {
               ...params.InputProps,
               endAdornment: (
                 <React.Fragment>
-                  {isLoading ? (
+                  {loading ? (
                     <CircularProgress color="inherit" size={20} />
                   ) : null}
                   {params.InputProps.endAdornment}

@@ -1,11 +1,18 @@
 import React, { useState } from "react";
-import { rootStateType } from "../store";
-import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import Pagination from "@material-ui/lab/Pagination";
 import { ArticlePreview, ArticlePreviewSkeleton } from "./ArticlePreview";
-import { api, ArticleResponseType, QueryKeyType } from "../utils";
-import { useQuery, queryCache } from "react-query";
+import { useQuery } from "@apollo/react-hooks";
+import { GetArticle } from "../utils/__generated__/GetArticle";
+import {
+  GetAllArticles,
+  GetAllArticlesVariables,
+} from "../utils/__generated__/GetAllArticles";
+import {
+  GetFeedArticles,
+  GetFeedArticlesVariables,
+} from "../utils/__generated__/GetFeedArticles";
+import { GET_FEED_ARTICLES, GET_ALL_ARTICLES } from "../utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,13 +41,11 @@ const ArticlePreviewList: React.FC<ArticleListPropsType> = ({
   offset = 0,
 }) => {
   const classes = useStyles();
-  const token = useSelector((state: rootStateType) => state.auth.token);
   const [currentPage, setCurrentPage] = useState(1);
-  const apiUrl = tag === "FEED" ? "getFeedArticles" : "getAllArticles";
 
   const apiOptions: ArticleListPropsType = {
     limit: limit,
-    offset: (currentPage-1) * limit + offset,
+    offset: (currentPage - 1) * limit + offset,
   };
   if (tag && tag !== "GLOBAL" && tag !== "FEED") {
     apiOptions.tag = tag;
@@ -52,56 +57,68 @@ const ArticlePreviewList: React.FC<ArticleListPropsType> = ({
     apiOptions.favorited = favorited;
   }
 
-  const queryKey: QueryKeyType = [apiUrl, { payload: apiOptions, token }];
-
-  const updateFn = (data: ArticleResponseType) => {
-    queryCache.cancelQueries(queryKey);
-
-    const previousData = queryCache.getQueryData(queryKey);
-
-    queryCache.setQueryData(queryKey, (old: any) => {
-      const articles = old.articles.map((item: any) => {
-        if (item.slug === data.slug) {
-          item = { ...data };
-        }
-        return { ...item };
-      });
-      return { articles: articles, articlesCount: old.articlesCount };
-    });
-
-    return () => queryCache.setQueryData(queryKey, previousData);
-  };
-
-  const { data, isLoading } = useQuery(queryKey, (key, { payload, token }) => {
-    if (key === "getFeedArticles") {
-      return api.getFeedArticles({ payload, token });
-    } else {
-      return api.getAllArticles({ payload, token });
-    }
+  const { loading: allloading, data: allArticlesData } = useQuery<
+    GetAllArticles,
+    GetAllArticlesVariables
+  >(GET_ALL_ARTICLES, {
+    variables: {
+      input: {
+        ...apiOptions,
+      },
+    },
+    skip: tag === "FEED",
   });
+
+  const { loading: feedloading, data: feedArticlesData } = useQuery<
+    GetFeedArticles,
+    GetFeedArticlesVariables
+  >(GET_FEED_ARTICLES, {
+    variables: {
+      input: {
+        limit: limit,
+        offset: offset,
+      },
+    },
+    skip: tag === "GLOBAL",
+  });
+
+  const isLoading = tag === "FEED" ? feedloading : allloading;
+
+  let articles: GetArticle["getArticle"][];
+  let articlesCount: number;
+
+  if (tag === "FEED") {
+    articles = feedArticlesData?.getFeedArticles?.articles || [];
+    articlesCount = feedArticlesData?.getFeedArticles?.articlesCount || 0;
+  } else {
+    articles = allArticlesData?.getAllArticles?.articles || [];
+    articlesCount = allArticlesData?.getAllArticles?.articlesCount || 0;
+  }
 
   return (
     <div className={classes.root}>
-      {isLoading || !data
+      {isLoading || !articles
         ? [...Array(10)].map((_, index) => {
             return (
               <ArticlePreviewSkeleton key={index}></ArticlePreviewSkeleton>
             );
           })
-        : data.articles.map((article) => {
-            return (
-              <ArticlePreview
-                key={article.slug}
-                article={article}
-                updateFn={updateFn}
-                queryKey={queryKey}
-              ></ArticlePreview>
-            );
+        : articles.map((article) => {
+            if (article) {
+              return (
+                <ArticlePreview
+                  key={article.slug}
+                  article={article}
+                ></ArticlePreview>
+              );
+            } else {
+              return null;
+            }
           })}
 
-      {isLoading || !data ? null : (
+      {isLoading || !articles ? null : (
         <Pagination
-          count={Math.ceil(data.articlesCount / 10)}
+          count={Math.ceil(articlesCount / 10)}
           defaultPage={1}
           size="large"
           page={currentPage}

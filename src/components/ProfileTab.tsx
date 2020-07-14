@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { ProfileResponseType } from "../utils";
 import ArticlePreviewList from "./ArticlePreviewList";
 import TabPanel from "./TabPanel";
 import Paper from "@material-ui/core/Paper";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
+import { ProfileFragment } from "../utils/__generated__/ProfileFragment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,12 +19,12 @@ const useStyles = makeStyles((theme) => ({
     marginTop: `${theme.spacing(2)}px`,
     maxWidth: "800px",
     width: "100%",
-    margin:'auto'
+    margin: "auto",
   },
 }));
 
 interface ProfileTab {
-  user: ProfileResponseType["profile"];
+  user: ProfileFragment;
 }
 
 const ProfileTab: React.FC<ProfileTab> = ({ user }) => {

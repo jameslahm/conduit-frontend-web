@@ -9,11 +9,15 @@ import Grid from "@material-ui/core/Grid";
 import LockOpenIcon from "@material-ui/icons/LockOpen";
 import { Link as NavLink, useNavigate } from "@reach/router";
 import validator from "validator";
-import { api } from "../utils";
 import { useDispatch } from "react-redux";
 import { login } from "../store";
-import { useMutation } from "react-query";
 import { useSnackbar } from "notistack";
+import {
+  Register as RegisterQueryType,
+  RegisterVariables,
+} from "../utils/__generated__/Register";
+import { REGISTER } from "../utils";
+import { useMutation } from "@apollo/react-hooks";
 
 interface RegisterPropsType {
   path: string;
@@ -59,7 +63,18 @@ const Register: React.FC<RegisterPropsType> = () => {
   const [passwordValidation, setPasswordValidation] = useState("");
   const [password2Validation, setPassword2Validation] = useState("");
   const dispatch = useDispatch();
-  const [mutate] = useMutation(api.register);
+  const [register] = useMutation<RegisterQueryType, RegisterVariables>(
+    REGISTER,
+    {
+      variables: {
+        input: {
+          username: username,
+          password: password,
+          email: email,
+        },
+      },
+    }
+  );
   const { enqueueSnackbar } = useSnackbar();
 
   const navigate = useNavigate();
@@ -89,10 +104,10 @@ const Register: React.FC<RegisterPropsType> = () => {
       return;
     } else {
       try {
-        const data = await mutate({
-          payload: { user: { username, password, email } },
-        });
-        dispatch(login(data.user));
+        const res = await register();
+        if (res.data?.register) {
+          dispatch(login(res.data.register));
+        }
         navigate("/");
       } catch (err) {
         enqueueSnackbar(err.message, { variant: "error" });

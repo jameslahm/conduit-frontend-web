@@ -10,10 +10,14 @@ import LockIcon from "@material-ui/icons/Lock";
 import { Link as NavLink, useNavigate } from "@reach/router";
 import validator from "validator";
 import { useDispatch } from "react-redux";
-import { api } from "../utils";
-import { login } from "../store";
-import { useMutation } from "react-query";
+import { login as loginAction } from "../store";
+import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "notistack";
+import {
+  Login as LoginQueryType,
+  LoginVariables,
+} from "../utils/__generated__/Login";
+import { LOGIN } from "../utils";
 
 interface LoginPropsType {
   path: string;
@@ -55,7 +59,14 @@ const Login: React.FC<LoginPropsType> = () => {
   const [emailValidation, setemailValidation] = useState("");
   const [passwordValidation, setPasswordValidation] = useState("");
   const dispatch = useDispatch();
-  const [mutate] = useMutation(api.login);
+  const [login] = useMutation<LoginQueryType, LoginVariables>(LOGIN, {
+    variables: {
+      input: {
+        email: email,
+        password: password,
+      },
+    },
+  });
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -77,10 +88,8 @@ const Login: React.FC<LoginPropsType> = () => {
       return;
     } else {
       try {
-        const data = await mutate({
-          payload: { user: { email, password } },
-        });
-        dispatch(login(data.user));
+        const res = await login();
+        if (res.data?.login) dispatch(loginAction(res.data.login));
         navigate("/");
       } catch (err) {
         enqueueSnackbar(err.message, { variant: "error" });
