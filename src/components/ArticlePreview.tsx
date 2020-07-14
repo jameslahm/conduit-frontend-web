@@ -58,6 +58,13 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({ article }) => {
       variables: {
         slug: article.slug,
       },
+      optimisticResponse: {
+        favoriteArticle: {
+          ...article,
+          favorited: true,
+          favoritesCount: article.favoritesCount + 1,
+        },
+      },
     }
   );
 
@@ -68,6 +75,13 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({ article }) => {
     variables: {
       slug: article.slug,
     },
+    optimisticResponse: {
+      unfavoriteArticle: {
+        ...article,
+        favorited: false,
+        favoritesCount: article.favoritesCount - 1,
+      },
+    },
   });
 
   async function handleFavorite() {
@@ -77,9 +91,9 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({ article }) => {
       });
     } else {
       if (article.favorited) {
-        await favorite();
-      } else {
         await unfavorite();
+      } else {
+        await favorite();
       }
     }
   }
@@ -92,13 +106,7 @@ const ArticlePreview: React.FC<ArticlePreviewPropsType> = ({ article }) => {
             <IconButton
               onClick={() => navigate(`/profiles/${article.author.username}`)}
             >
-              <Avatar
-                src={
-                  article.author.image
-                    ? article.author.image
-                    : "https://i.pravatar.cc/40"
-                }
-              ></Avatar>
+              <Avatar src={article.author.image}></Avatar>
             </IconButton>
           }
           action={

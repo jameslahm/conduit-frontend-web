@@ -54,15 +54,7 @@ const Comment: React.FC<CommentPropsType> = ({ comment }) => {
     <>
       <Card>
         <CardHeader
-          avatar={
-            <Avatar
-              src={
-                comment.author.image
-                  ? comment.author.image
-                  : "https://i.pravatar.cc/40"
-              }
-            ></Avatar>
-          }
+          avatar={<Avatar src={comment.author.image}></Avatar>}
           title={comment.author.username}
           action={
             comment.author.username === auth.username ? (

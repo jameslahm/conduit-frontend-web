@@ -58,6 +58,13 @@ const ArticleContent: React.FC<ArticleContentPropsType> = ({ article }) => {
       variables: {
         slug: article.slug,
       },
+      optimisticResponse: {
+        favoriteArticle: {
+          ...article,
+          favorited: true,
+          favoritesCount: article.favoritesCount + 1,
+        },
+      },
     }
   );
 
@@ -68,6 +75,13 @@ const ArticleContent: React.FC<ArticleContentPropsType> = ({ article }) => {
     variables: {
       slug: article.slug,
     },
+    optimisticResponse: {
+      unfavoriteArticle: {
+        ...article,
+        favorited: false,
+        favoritesCount: article.favoritesCount - 1,
+      },
+    },
   });
 
   async function handleFavorite() {
@@ -77,9 +91,9 @@ const ArticleContent: React.FC<ArticleContentPropsType> = ({ article }) => {
       });
     } else {
       if (article.favorited) {
-        await favorite();
-      } else {
         await unfavorite();
+      } else {
+        await favorite();
       }
     }
   }

@@ -10,14 +10,10 @@ import App from "./App";
 import { SnackbarProvider } from "notistack";
 import { ApolloProvider } from "@apollo/react-hooks";
 import { client } from "./utils";
-import {
-  LocationProvider,
-  createMemorySource,
-  createHistory,
-} from "@reach/router";
+import { LocationProvider, createHistory } from "@reach/router";
 
-let source = createMemorySource("/");
-let history = createHistory(source);
+// let source = createMemorySource("/");
+let history = createHistory(window as any);
 
 const store = createStore(rootReducer);
 

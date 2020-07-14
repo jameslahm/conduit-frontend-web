@@ -30,7 +30,6 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN}}"
   automerge:
-    on:
     name: Auto merge after successful checks
     needs: autoapprove
     runs-on: ubuntu-latest

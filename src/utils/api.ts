@@ -1,8 +1,15 @@
 import { ApolloClient } from "apollo-client";
-import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
+import {
+  InMemoryCache,
+  NormalizedCacheObject,
+  defaultDataIdFromObject,
+} from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
 import gql from "graphql-tag";
+import { ApolloLink } from "apollo-link";
 import { setContext } from "apollo-link-context";
+import { createPersistedQueryLink } from "apollo-link-persisted-queries";
+import { toIdValue } from "apollo-utilities";
 
 const authLink = setContext((_, { headers }) => {
   const auth = localStorage.getItem("auth");
@@ -16,15 +23,47 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const link = new HttpLink({
-  uri: "http://localhost:4000/graphql",
+const httplink = new HttpLink({
+  uri: "https://conduit-graphql.netlify.app/graphql",
 });
 
-const cache = new InMemoryCache();
+const cache: any = new InMemoryCache({
+  dataIdFromObject: (object) => {
+    switch (object.__typename) {
+      case "Article":
+        // @ts-ignore
+        return object.__typename + " " + object.slug;
+      default:
+        return defaultDataIdFromObject(object);
+    }
+  },
+  cacheRedirects: {
+    Query: {
+      getArticle: (_, args) =>
+        toIdValue(
+          cache.config.dataIdFromObject({
+            __typename: "Article",
+            slug: args.slug,
+          })
+        ),
+    },
+  },
+});
+
+const link = ApolloLink.from([
+  authLink,
+  createPersistedQueryLink({ useGETForHashedQueries: true }),
+  httplink,
+]);
 
 const client = new ApolloClient<NormalizedCacheObject>({
-  link: authLink.concat(link),
+  link: link,
   cache,
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: "cache-and-network",
+    },
+  },
 });
 
 export const UserFragment = gql`
@@ -197,6 +236,8 @@ export const DELETE_ARTICLE = gql`
       }
     }
   }
+  ${ArticleFragment}
+  ${ProfileFragment}
 `;
 
 export const REGISTER = gql`

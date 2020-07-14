@@ -66,7 +66,6 @@ const ArticlePreviewList: React.FC<ArticleListPropsType> = ({
         ...apiOptions,
       },
     },
-    skip: tag === "FEED",
   });
 
   const { loading: feedloading, data: feedArticlesData } = useQuery<
@@ -79,25 +78,24 @@ const ArticlePreviewList: React.FC<ArticleListPropsType> = ({
         offset: offset,
       },
     },
-    skip: tag === "GLOBAL",
   });
 
   const isLoading = tag === "FEED" ? feedloading : allloading;
 
-  let articles: GetArticle["getArticle"][];
+  let articles: GetArticle["getArticle"][] | undefined;
   let articlesCount: number;
 
   if (tag === "FEED") {
-    articles = feedArticlesData?.getFeedArticles?.articles || [];
+    articles = feedArticlesData?.getFeedArticles?.articles;
     articlesCount = feedArticlesData?.getFeedArticles?.articlesCount || 0;
   } else {
-    articles = allArticlesData?.getAllArticles?.articles || [];
+    articles = allArticlesData?.getAllArticles?.articles;
     articlesCount = allArticlesData?.getAllArticles?.articlesCount || 0;
   }
 
   return (
     <div className={classes.root}>
-      {isLoading || !articles
+      {!articles
         ? [...Array(10)].map((_, index) => {
             return (
               <ArticlePreviewSkeleton key={index}></ArticlePreviewSkeleton>
@@ -116,7 +114,7 @@ const ArticlePreviewList: React.FC<ArticleListPropsType> = ({
             }
           })}
 
-      {isLoading || !articles ? null : (
+      {isLoading && !articles ? null : (
         <Pagination
           count={Math.ceil(articlesCount / 10)}
           defaultPage={1}

@@ -72,14 +72,14 @@ const Article: React.FC<ArticlePropsType> = () => {
   const { slug }: { slug: string } = useParams();
   const auth = useSelector((state: rootStateType) => state.auth);
 
-  const { data: articleData, loading } = useQuery<
-    GetArticle,
-    GetArticleVariables
-  >(GET_ARTICLE, {
-    variables: {
-      slug: slug,
-    },
-  });
+  const { data: articleData } = useQuery<GetArticle, GetArticleVariables>(
+    GET_ARTICLE,
+    {
+      variables: {
+        slug: slug,
+      },
+    }
+  );
 
   const { data: commentsData } = useQuery<GetComments, GetCommentsVariables>(
     GET_COMMENTS,
@@ -115,7 +115,7 @@ const Article: React.FC<ArticlePropsType> = () => {
     }
   }
 
-  if (loading || !articleData?.getArticle) {
+  if (!articleData?.getArticle) {
     return (
       <div className={classes.root}>
         <Grid container justify="space-between" alignItems="flex-start">

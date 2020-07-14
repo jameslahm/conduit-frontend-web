@@ -34,7 +34,7 @@ const TagList: React.FC<TagListPropsType> = ({
   const classes = useStyles();
   const token = useSelector((state: rootStateType) => state.auth.token);
   const { enqueueSnackbar } = useSnackbar();
-  const { data: tagsData, loading } = useQuery<GetTags>(GET_TAGS);
+  const { data: tagsData } = useQuery<GetTags>(GET_TAGS);
 
   function handleClick(tag: string) {
     if (tag === "FEED") {
@@ -47,7 +47,7 @@ const TagList: React.FC<TagListPropsType> = ({
 
   return (
     <div className={classes.root}>
-      {loading || !tagsData?.getTags ? (
+      {!tagsData?.getTags ? (
         <Skeleton variant="rect" height={300}></Skeleton>
       ) : (
         <Paper className={classes.content}>

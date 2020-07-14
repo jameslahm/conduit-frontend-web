@@ -8,7 +8,6 @@ import Button from "@material-ui/core/Button";
 import Autocomplele from "@material-ui/lab/Autocomplete";
 import TabPanel from "./TabPanel";
 import { md, CREATE_ARTICLE, GET_TAGS } from "../utils";
-
 import { rootStateType } from "../store";
 import { useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
@@ -86,9 +85,7 @@ const EditArticle: React.FC<{ path: string }> = () => {
   );
 
   const navigate = useNavigate();
-  async function handleClick(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) {
+  async function handleClick() {
     if (!token) {
       enqueueSnackbar("Please Login first", { variant: "error" });
     } else {
