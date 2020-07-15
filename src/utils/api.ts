@@ -4,7 +4,7 @@ import {
   NormalizedCacheObject,
   defaultDataIdFromObject,
 } from "apollo-cache-inmemory";
-import { HttpLink } from "apollo-link-http";
+import { createHttpLink } from "apollo-link-http";
 import gql from "graphql-tag";
 import { ApolloLink } from "apollo-link";
 import { setContext } from "apollo-link-context";
@@ -23,8 +23,9 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const httplink = new HttpLink({
-  uri: "https://conduit-graphql.netlify.app/graphql",
+const httplink = createHttpLink({
+  uri: "http://localhost:8888/graphql",
+  useGETForQueries: true,
 });
 
 const cache: any = new InMemoryCache({
@@ -32,7 +33,7 @@ const cache: any = new InMemoryCache({
     switch (object.__typename) {
       case "Article":
         // @ts-ignore
-        return object.__typename + " " + object.slug;
+        return object.__typename + ":" + object.slug;
       default:
         return defaultDataIdFromObject(object);
     }
