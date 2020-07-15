@@ -24,7 +24,7 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const httplink = createHttpLink({
-  uri: "http://localhost:8888/graphql",
+  uri: "https://conduit-graphql.netlify.app/graphql",
   useGETForQueries: true,
 });
 

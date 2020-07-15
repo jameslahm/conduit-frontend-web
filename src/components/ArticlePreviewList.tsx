@@ -80,6 +80,7 @@ const ArticlePreviewList: React.FC<ArticleListPropsType> = ({
     },
   });
 
+  console.log(feedloading, allloading);
   const isLoading = tag === "FEED" ? feedloading : allloading;
 
   let articles: GetArticle["getArticle"][] | undefined;
