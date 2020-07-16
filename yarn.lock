@@ -9807,10 +9807,10 @@ react-query-devtools@^2.3.0:
   dependencies:
     match-sorter "^4.1.0"
 
-react-query@^2.4.16:
-  version "2.4.16"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.4.16.tgz#da81dbbdcf7bb8860cda359f1438dff6e7b54a39"
-  integrity sha512-i/lj8DbWRvgyTZuKxhMNa/Ekrz8bDKqqFg2jAQyZyN66qmAMmnAd6AA2zlLyzfYn7MFx9UVts+DAcaTghO+EbQ==
+react-query@^2.4.19:
+  version "2.4.19"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.4.19.tgz#a8d1602f10992cfe6c034f4bb03c2bf240b81e11"
+  integrity sha512-WGzMg1JW/Qy/4Uu773laaaRyVb5abhn0xDmFyNDtx5MpDPn0Y+szGPVJZMKk3vU6SzpxtM6UhcDcwus8w+A/IQ==
   dependencies:
     ts-toolbelt "^6.9.4"
 
