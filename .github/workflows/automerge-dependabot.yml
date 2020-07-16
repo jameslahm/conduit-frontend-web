@@ -40,4 +40,4 @@ jobs:
         env:
           GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
           MERGE_RETRIES: "12"
-          MERGE_RETRY_SLEEP: "10000"
+          MERGE_RETRY_SLEEP: "60000"
