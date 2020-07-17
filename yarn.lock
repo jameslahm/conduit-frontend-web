@@ -9816,10 +9816,10 @@ react-query-devtools@^2.3.1:
   dependencies:
     match-sorter "^4.1.0"
 
-react-query@^2.4.16:
-  version "2.4.16"
-  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.4.16.tgz#da81dbbdcf7bb8860cda359f1438dff6e7b54a39"
-  integrity sha512-i/lj8DbWRvgyTZuKxhMNa/Ekrz8bDKqqFg2jAQyZyN66qmAMmnAd6AA2zlLyzfYn7MFx9UVts+DAcaTghO+EbQ==
+react-query@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.5.1.tgz#f4ec966567346b35d5a1681a1ae142162f4bb017"
+  integrity sha512-VziTyEGU1oHNHU7/uTBpX+dOt05+WEubrkl7paWSxxyAcHvLrNmtl88b0hXc76Rjk2XAxcoqtZ+EczYT6GNIAA==
   dependencies:
     ts-toolbelt "^6.9.4"
 
