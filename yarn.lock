@@ -9811,10 +9811,10 @@ react-markdown@^4.3.1:
     unist-util-visit "^1.3.0"
     xtend "^4.0.1"
 
-react-query-devtools@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/react-query-devtools/-/react-query-devtools-2.3.2.tgz#974ddc154fc507021853da7635321189f742590d"
-  integrity sha512-AHFFA7OABzk4HpUVw6QXWSM9QuT87Xi4EVKyWoLnuJ9QZ/7rnhhdrQLBZQUatibuzgsOpD4opqpj4P3gWJLKGA==
+react-query-devtools@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/react-query-devtools/-/react-query-devtools-2.4.0.tgz#000fbd432947b1c6517e11332cd075b73db3b641"
+  integrity sha512-jWPuPc3k2hbCzz0qszDrRr2skzEGd4t96b6aWmPY2P1NzbTIQwa3Jdb0vzsk7cx1i5akaQOgFbQx4oRuxsMHqw==
   dependencies:
     match-sorter "^4.1.0"
 
