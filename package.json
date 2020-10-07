@@ -22,7 +22,7 @@
 		"markdown-it-mark": "^3.0.0",
 		"markdown-it-sub": "^1.0.0",
 		"markdown-it-sup": "^1.0.0",
-		"notistack": "^1.0.0",
+		"notistack": "^1.0.1",
 		"prismjs": "^1.21.0",
 		"qs": "^6.9.4",
 		"react": "^16.13.1",
