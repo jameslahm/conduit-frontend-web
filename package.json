@@ -15,7 +15,7 @@
 		"@testing-library/react": "^11.0.4",
 		"@testing-library/user-event": "^12.1.8",
 		"date-fns": "^2.16.1",
-		"markdown-it": "^11.0.1",
+		"markdown-it": "^12.0.0",
 		"markdown-it-abbr": "^1.0.4",
 		"markdown-it-emoji": "^1.4.0",
 		"markdown-it-footnote": "^3.0.2",
