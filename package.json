@@ -25,7 +25,7 @@
 		"notistack": "^1.0.1",
 		"prismjs": "^1.22.0",
 		"qs": "^6.9.4",
-		"react": "^16.13.1",
+		"react": "^16.14.0",
 		"react-dom": "^16.13.1",
 		"react-markdown": "^4.3.1",
 		"react-query": "^2.7.0",
