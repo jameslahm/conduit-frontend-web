@@ -1809,10 +1809,10 @@
   resolved "https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-2.1.0.tgz#ea3dd64c4805597311790b61e872cbd1ed2cd806"
   integrity sha512-Q7DYAOi9O/+cLLhdaSvKdaumWyHbm7HAk/bFwwyTuU0arR5yyCeW5GOoqt4tJTpDRxhpx9Q8kQL6vMpuw9hDSw==
 
-"@types/markdown-it-emoji@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@types/markdown-it-emoji/-/markdown-it-emoji-1.4.0.tgz#2102dcb3cdaf15d7ee1c01df0fda00f61ca5fece"
-  integrity sha512-TeSq2kwZZwzt/6mfKW3FXtvVdtt9ne+Fvf5/jiBejOhGcnG3keVfsxQaHSUhy0xyHaCXDfj+kZLSPQrDtR5N4w==
+"@types/markdown-it-emoji@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it-emoji/-/markdown-it-emoji-2.0.0.tgz#acc49b6e4ec1bc7eecbe26b894ccd25cb7db916d"
+  integrity sha512-X27jmmknSFzeKxqXQePwL1FfjFeIYNd0VT3lbZi7/Z+kHmYGBkFuOd/8O7LUqriIWfVXIt5EYAMg8idSn6MhHw==
   dependencies:
     "@types/markdown-it" "*"
 
