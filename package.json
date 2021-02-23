@@ -69,7 +69,7 @@
 		]
 	},
 	"devDependencies": {
-		"@commitlint/cli": "^11.0.0",
+		"@commitlint/cli": "^12.0.0",
 		"@commitlint/config-conventional": "^12.0.0",
 		"@types/jest": "^26.0.20",
 		"@types/markdown-it": "^12.0.1",
