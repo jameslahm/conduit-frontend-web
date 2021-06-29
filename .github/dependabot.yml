@@ -1,12 +1,12 @@
 version: 2
 
-updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    labels:
-      - "dependencies"
-      - "automerge"
-    assignees:
-      - "jameslahm"
+# updates:
+#   - package-ecosystem: "npm"
+#     directory: "/"
+#     schedule:
+#       interval: "monthly"
+#     labels:
+#       - "dependencies"
+#       - "automerge"
+#     assignees:
+#       - "jameslahm"
